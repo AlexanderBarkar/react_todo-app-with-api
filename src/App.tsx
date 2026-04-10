@@ -26,8 +26,6 @@ export const App: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
   const [processingTodos, setProcessingTodos] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // 🔥 NEW
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const showError = (message: string) => {
@@ -45,7 +43,7 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // ADD (🔥 FIXED)
+  // ADD TODO
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -63,14 +61,14 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setTempTodo(temp);   // ✅ показываем сразу
+    setTempTodo(temp);
     setIsLoading(true);
 
     createTodo(temp)
       .then(newTodo => {
         setTodos(prev => [...prev, newTodo]);
         setNewTitle('');
-        setTempTodo(null); // ✅ убрали временный
+        setTempTodo(null);
       })
       .catch(() => {
         showError(UNABLE_TO_ADD_ERROR);
@@ -79,7 +77,7 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   };
 
-  // DELETE
+  // DELETE TODO
   const handleDeleteTodo = (id: number) => {
     setProcessingTodos(prev => [...prev, id]);
 
@@ -93,7 +91,7 @@ export const App: React.FC = () => {
       });
   };
 
-  // TOGGLE
+  // TOGGLE TODO
   const handleToggleTodo = (todo: Todo) => {
     setProcessingTodos(prev => [...prev, todo.id]);
 
@@ -131,11 +129,11 @@ export const App: React.FC = () => {
     if (status === Status.All) return true;
     if (status === Status.Active) return !todo.completed;
     if (status === Status.Completed) return todo.completed;
-
     return true;
   });
 
   const activeTodos = todos.filter(t => !t.completed).length;
+  const hasTodos = todos.length > 0; // 🔥 IMPORTANT FIX
 
   return (
     <div className="todoapp">
@@ -147,13 +145,14 @@ export const App: React.FC = () => {
           setNewTitle={setNewTitle}
           onSubmit={handleAddTodo}
           onToggleAll={handleToggleAll}
-          allCompleted={todos.length > 0 && todos.every(t => t.completed)}
+          allCompleted={hasTodos && todos.every(t => t.completed)}
           isLoading={isLoading}
+          hasTodos={hasTodos} // 🔥 FIX
         />
 
         <TodoList
           todos={filteredTodos}
-          tempTodo={tempTodo} // 🔥 важно
+          tempTodo={tempTodo}
           processingTodos={processingTodos}
           onDelete={handleDeleteTodo}
           onToggle={handleToggleTodo}
@@ -161,7 +160,7 @@ export const App: React.FC = () => {
           showError={showError}
         />
 
-        {todos.length > 0 && (
+        {hasTodos && (
           <Footer
             activeTodos={activeTodos}
             currentStatus={status}
@@ -172,10 +171,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <UserWarning
-        error={error}
-        onClose={() => setError(null)}
-      />
+      <UserWarning error={error} onClose={() => setError(null)} />
     </div>
   );
 };

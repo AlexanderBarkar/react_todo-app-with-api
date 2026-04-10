@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef } from 'react';
 
 type Props = {
@@ -6,7 +7,8 @@ type Props = {
   onSubmit: (e: React.FormEvent) => void;
   onToggleAll: () => void;
   allCompleted: boolean;
-  isLoading: boolean; // 🔥 важно
+  isLoading: boolean;
+  hasTodos: boolean; // 🔥 FIX
 };
 
 export const Header: React.FC<Props> = ({
@@ -16,23 +18,25 @@ export const Header: React.FC<Props> = ({
   onToggleAll,
   allCompleted,
   isLoading,
+  hasTodos,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 🔥 держим фокус после любого рендера
   useEffect(() => {
     inputRef.current?.focus();
   });
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line */}
-      <button
-        type="button"
-        className={`todoapp__toggle-all ${allCompleted ? 'active' : ''}`}
-        data-cy="ToggleAllButton"
-        onClick={onToggleAll}
-      />
+      {/* 🔥 ToggleAll ONLY if todos exist AND not loading */}
+      {hasTodos && !isLoading && (
+        <button
+          type="button"
+          className={`todoapp__toggle-all ${allCompleted ? 'active' : ''}`}
+          data-cy="ToggleAllButton"
+          onClick={onToggleAll}
+        />
+      )}
 
       <form onSubmit={onSubmit}>
         <input
@@ -43,7 +47,7 @@ export const Header: React.FC<Props> = ({
           data-cy="NewTodoField"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={isLoading} // 🔥 фикс теста
+          disabled={isLoading}
           onChange={e => setNewTitle(e.target.value)}
         />
       </form>
