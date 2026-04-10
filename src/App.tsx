@@ -21,11 +21,14 @@ import {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [status, setStatus] = useState(Status.All); // ✅ FIX
+  const [status, setStatus] = useState(Status.All);
   const [error, setError] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [processingTodos, setProcessingTodos] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // 🔥 NEW
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const showError = (message: string) => {
     setError(message);
@@ -42,7 +45,7 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // ADD
+  // ADD (🔥 FIXED)
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -53,21 +56,26 @@ export const App: React.FC = () => {
       return;
     }
 
-    const tempTodo: Todo = {
+    const temp: Todo = {
       id: 0,
       userId: USER_ID,
       title,
       completed: false,
     };
 
+    setTempTodo(temp);   // ✅ показываем сразу
     setIsLoading(true);
 
-    createTodo(tempTodo)
+    createTodo(temp)
       .then(newTodo => {
         setTodos(prev => [...prev, newTodo]);
         setNewTitle('');
+        setTempTodo(null); // ✅ убрали временный
       })
-      .catch(() => showError(UNABLE_TO_ADD_ERROR))
+      .catch(() => {
+        showError(UNABLE_TO_ADD_ERROR);
+        setTempTodo(null);
+      })
       .finally(() => setIsLoading(false));
   };
 
@@ -118,7 +126,7 @@ export const App: React.FC = () => {
       .forEach(todo => handleDeleteTodo(todo.id));
   };
 
-  // FILTERED TODOS ✅ FIX
+  // FILTER
   const filteredTodos = todos.filter(todo => {
     if (status === Status.All) return true;
     if (status === Status.Active) return !todo.completed;
@@ -140,10 +148,12 @@ export const App: React.FC = () => {
           onSubmit={handleAddTodo}
           onToggleAll={handleToggleAll}
           allCompleted={todos.length > 0 && todos.every(t => t.completed)}
+          isLoading={isLoading}
         />
 
         <TodoList
-          todos={filteredTodos} // ✅ FIX
+          todos={filteredTodos}
+          tempTodo={tempTodo} // 🔥 важно
           processingTodos={processingTodos}
           onDelete={handleDeleteTodo}
           onToggle={handleToggleTodo}

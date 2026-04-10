@@ -1,7 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { Todo } from '../../types/Todo';
-import { USER_ID } from '../../constants/userdata';
-import { EMPTY_TITLE_ERROR } from '../../constants/errordata';
 
 type Props = {
   newTitle: string;
@@ -9,6 +6,7 @@ type Props = {
   onSubmit: (e: React.FormEvent) => void;
   onToggleAll: () => void;
   allCompleted: boolean;
+  isLoading: boolean; // 🔥 важно
 };
 
 export const Header: React.FC<Props> = ({
@@ -17,10 +15,11 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   onToggleAll,
   allCompleted,
+  isLoading,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 🔥 ВАЖНО: фокус после КАЖДОГО рендера
+  // 🔥 держим фокус после любого рендера
   useEffect(() => {
     inputRef.current?.focus();
   });
@@ -44,6 +43,7 @@ export const Header: React.FC<Props> = ({
           data-cy="NewTodoField"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isLoading} // 🔥 фикс теста
           onChange={e => setNewTitle(e.target.value)}
         />
       </form>

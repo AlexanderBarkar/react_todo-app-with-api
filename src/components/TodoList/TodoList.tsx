@@ -4,6 +4,7 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todos: Todo[];
+  tempTodo: Todo | null; // ✅ ДОБАВЛЕНО
   processingTodos: number[];
   onDelete: (id: number) => void;
   onToggle: (todo: Todo) => void;
@@ -13,6 +14,7 @@ type Props = {
 
 export const TodoList: React.FC<Props> = ({
   todos,
+  tempTodo,
   processingTodos,
   onDelete,
   onToggle,
@@ -21,6 +23,7 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
+      {/* обычные todos */}
       {todos.map(todo => (
         <TodoItem
           key={todo.id}
@@ -32,6 +35,18 @@ export const TodoList: React.FC<Props> = ({
           showError={showError}
         />
       ))}
+
+      {/* 🔥 TEMP TODO (самое важное) */}
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          onDelete={() => {}}
+          onToggle={() => {}}
+          processingTodos={[0]} // чтобы показать loader
+          setTodos={setTodos}
+          showError={showError}
+        />
+      )}
     </section>
   );
 };
