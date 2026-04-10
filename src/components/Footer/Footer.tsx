@@ -70,4 +70,3 @@ export const Footer: React.FC<Props> = ({
     </footer>
   );
 };
-
