@@ -23,7 +23,10 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
-  const [isUpdating, setIsUpdating] = useState(false); // 🔥 FIX
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isProcessing = processingTodos.includes(todo.id);
@@ -37,7 +40,7 @@ export const TodoItem: React.FC<Props> = ({
   const finishEditing = () => {
     const trimmed = title.trim();
 
-    if (isUpdating) return; // 🔥 FIX DOUBLE CALL
+    if (isSubmitting || isUpdating) return;
 
     if (trimmed === todo.title) {
       setIsEditing(false);
@@ -49,6 +52,7 @@ export const TodoItem: React.FC<Props> = ({
       return;
     }
 
+    setIsSubmitting(true);
     setIsUpdating(true);
 
     updateTodo(todo.id, { title: trimmed })
@@ -64,6 +68,7 @@ export const TodoItem: React.FC<Props> = ({
         setTitle(todo.title);
       })
       .finally(() => {
+        setIsSubmitting(false);
         setIsUpdating(false);
       });
   };
@@ -86,6 +91,7 @@ export const TodoItem: React.FC<Props> = ({
         completed: todo.completed,
       })}
     >
+      {/* checkbox */}
       <label className="todo__status-label">
         <input
           type="checkbox"
@@ -95,6 +101,7 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
+      {/* title / edit */}
       {!isEditing ? (
         <span
           data-cy="TodoTitle"
@@ -110,11 +117,12 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__title-field"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          onBlur={finishEditing} // 🔥 unified function
+          onBlur={finishEditing}
           onKeyUp={handleKeyUp}
         />
       )}
 
+      {/* delete */}
       {!isEditing && (
         <button
           type="button"
@@ -126,10 +134,11 @@ export const TodoItem: React.FC<Props> = ({
         </button>
       )}
 
+      {/* loader */}
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isProcessing,
+          'is-active': isProcessing || isUpdating,
         })}
       >
         <div className="modal-background has-background-white-ter" />
