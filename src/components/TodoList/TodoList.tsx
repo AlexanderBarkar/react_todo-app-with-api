@@ -34,7 +34,7 @@ export const TodoList: React.FC<Props> = ({
           onDelete={() => onDelete(todo.id)}
           onToggle={() => onToggle(todo)}
           processingTodos={processingTodos}
-          setProcessingTodos={setProcessingTodos}   // 🔥 ВАЖНО
+          setProcessingTodos={setProcessingTodos} // 🔥 ВАЖНО
           setTodos={setTodos}
           showError={showError}
         />

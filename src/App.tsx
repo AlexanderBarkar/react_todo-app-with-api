@@ -51,6 +51,7 @@ export const App: React.FC = () => {
 
     if (!title) {
       showError(EMPTY_TITLE_ERROR);
+
       return;
     }
 
@@ -97,9 +98,7 @@ export const App: React.FC = () => {
 
     updateTodo(todo.id, { completed: !todo.completed })
       .then(updated => {
-        setTodos(prev =>
-          prev.map(t => (t.id === todo.id ? updated : t)),
-        );
+        setTodos(prev => prev.map(t => (t.id === todo.id ? updated : t)));
       })
       .catch(() => showError(UNABLE_TO_UPDATE_ERROR))
       .finally(() => {
@@ -117,16 +116,23 @@ export const App: React.FC = () => {
 
   // CLEAR COMPLETED
   const handleClearCompleted = () => {
-    todos
-      .filter(t => t.completed)
-      .forEach(todo => handleDeleteTodo(todo.id));
+    todos.filter(t => t.completed).forEach(todo => handleDeleteTodo(todo.id));
   };
 
   // FILTER
   const filteredTodos = todos.filter(todo => {
-    if (status === Status.All) return true;
-    if (status === Status.Active) return !todo.completed;
-    if (status === Status.Completed) return todo.completed;
+    if (status === Status.All) {
+      return true;
+    }
+
+    if (status === Status.Active) {
+      return !todo.completed;
+    }
+
+    if (status === Status.Completed) {
+      return todo.completed;
+    }
+
     return true;
   });
 
@@ -155,7 +161,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
           onToggle={handleToggleTodo}
           setTodos={setTodos}
-          setProcessingTodos={setProcessingTodos}   // 🔥 КРИТИЧНО
+          setProcessingTodos={setProcessingTodos} // 🔥 КРИТИЧНО
           showError={showError}
         />
 
