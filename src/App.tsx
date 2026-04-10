@@ -110,11 +110,9 @@ export const App: React.FC = () => {
   // TOGGLE ALL
   const handleToggleAll = () => {
     const allCompleted = todos.every(t => t.completed);
-    const newStatus = !allCompleted;
+    const targetTodos = todos.filter(t => t.completed !== !allCompleted);
 
-    todos
-      .filter(t => t.completed !== newStatus)
-      .forEach(todo => handleToggleTodo(todo));
+    targetTodos.forEach(todo => handleToggleTodo(todo));
   };
 
   // CLEAR COMPLETED
@@ -133,7 +131,7 @@ export const App: React.FC = () => {
   });
 
   const activeTodos = todos.filter(t => !t.completed).length;
-  const hasTodos = todos.length > 0; // 🔥 IMPORTANT FIX
+  const hasTodos = todos.length > 0;
 
   return (
     <div className="todoapp">
@@ -147,7 +145,7 @@ export const App: React.FC = () => {
           onToggleAll={handleToggleAll}
           allCompleted={hasTodos && todos.every(t => t.completed)}
           isLoading={isLoading}
-          hasTodos={hasTodos} // 🔥 FIX
+          hasTodos={hasTodos}
         />
 
         <TodoList
@@ -157,6 +155,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
           onToggle={handleToggleTodo}
           setTodos={setTodos}
+          setProcessingTodos={setProcessingTodos}   // 🔥 КРИТИЧНО
           showError={showError}
         />
 

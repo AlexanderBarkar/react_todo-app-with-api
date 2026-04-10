@@ -4,11 +4,14 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todos: Todo[];
-  tempTodo: Todo | null; // ✅ ДОБАВЛЕНО
+  tempTodo: Todo | null;
   processingTodos: number[];
+
   onDelete: (id: number) => void;
   onToggle: (todo: Todo) => void;
+
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setProcessingTodos: React.Dispatch<React.SetStateAction<number[]>>; // 🔥 ДОБАВИТЬ
   showError: (message: string) => void;
 };
 
@@ -19,11 +22,11 @@ export const TodoList: React.FC<Props> = ({
   onDelete,
   onToggle,
   setTodos,
+  setProcessingTodos,
   showError,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {/* обычные todos */}
       {todos.map(todo => (
         <TodoItem
           key={todo.id}
@@ -31,18 +34,19 @@ export const TodoList: React.FC<Props> = ({
           onDelete={() => onDelete(todo.id)}
           onToggle={() => onToggle(todo)}
           processingTodos={processingTodos}
+          setProcessingTodos={setProcessingTodos}   // 🔥 ВАЖНО
           setTodos={setTodos}
           showError={showError}
         />
       ))}
 
-      {/* 🔥 TEMP TODO (самое важное) */}
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
           onDelete={() => {}}
           onToggle={() => {}}
-          processingTodos={[0]} // чтобы показать loader
+          processingTodos={[0]}
+          setProcessingTodos={setProcessingTodos}
           setTodos={setTodos}
           showError={showError}
         />

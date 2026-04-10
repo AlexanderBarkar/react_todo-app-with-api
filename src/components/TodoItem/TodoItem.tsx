@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
@@ -25,6 +23,7 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
+  const [isUpdating, setIsUpdating] = useState(false); // 🔥 FIX
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isProcessing = processingTodos.includes(todo.id);
@@ -35,30 +34,37 @@ export const TodoItem: React.FC<Props> = ({
     }
   }, [isEditing]);
 
-  const handleSubmit = () => {
+  const finishEditing = () => {
     const trimmed = title.trim();
+
+    if (isUpdating) return; // 🔥 FIX DOUBLE CALL
 
     if (trimmed === todo.title) {
       setIsEditing(false);
-
       return;
     }
 
     if (!trimmed) {
       onDelete?.();
-
       return;
     }
 
+    setIsUpdating(true);
+
     updateTodo(todo.id, { title: trimmed })
       .then(updated => {
-        setTodos?.(prev => prev.map(t => (t.id === todo.id ? updated : t)));
+        setTodos?.(prev =>
+          prev.map(t => (t.id === todo.id ? updated : t)),
+        );
+
+        setIsEditing(false);
       })
       .catch(() => {
         showError?.(UNABLE_TO_UPDATE_ERROR);
+        setTitle(todo.title);
       })
       .finally(() => {
-        setIsEditing(false);
+        setIsUpdating(false);
       });
   };
 
@@ -69,7 +75,7 @@ export const TodoItem: React.FC<Props> = ({
     }
 
     if (e.key === 'Enter') {
-      handleSubmit();
+      finishEditing();
     }
   };
 
@@ -80,7 +86,6 @@ export const TodoItem: React.FC<Props> = ({
         completed: todo.completed,
       })}
     >
-      {/* checkbox */}
       <label className="todo__status-label">
         <input
           type="checkbox"
@@ -90,7 +95,6 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      {/* title / input */}
       {!isEditing ? (
         <span
           data-cy="TodoTitle"
@@ -106,22 +110,22 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__title-field"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          onBlur={handleSubmit}
+          onBlur={finishEditing} // 🔥 unified function
           onKeyUp={handleKeyUp}
         />
       )}
 
-      {/* delete button */}
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={onDelete}
-      >
-        ×
-      </button>
+      {!isEditing && (
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={onDelete}
+        >
+          ×
+        </button>
+      )}
 
-      {/* loader */}
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
