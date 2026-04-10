@@ -3,24 +3,24 @@ import cn from 'classnames';
 import { Status } from '../../types/Status';
 
 type Props = {
-  itemsLeft: number;
+  activeTodos: number;
   currentStatus: Status;
   hasCompleted: boolean;
   setStatus: (value: Status) => void;
-  removeHandleDeleteTodo: () => void;
+  onClearCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
-  itemsLeft,
+  activeTodos,
   hasCompleted,
   currentStatus,
   setStatus,
-  removeHandleDeleteTodo,
+  onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${itemsLeft} items left`}
+        {activeTodos} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -32,7 +32,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkAll"
           onClick={() => setStatus(Status.All)}
         >
-          {Status.All}
+          All
         </a>
 
         <a
@@ -43,7 +43,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkActive"
           onClick={() => setStatus(Status.Active)}
         >
-          {Status.Active}
+          Active
         </a>
 
         <a
@@ -54,7 +54,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           onClick={() => setStatus(Status.Completed)}
         >
-          {Status.Completed}
+          Completed
         </a>
       </nav>
 
@@ -63,7 +63,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={removeHandleDeleteTodo}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

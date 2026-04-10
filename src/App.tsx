@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTodos, createTodo, deleteTodo, updateTodo } from './api/todos';
 import { Todo } from './types/Todo';
+import { Status } from './types/Status';
 
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
@@ -15,11 +16,12 @@ import {
   UNABLE_TO_ADD_ERROR,
   UNABLE_TO_DELETE_ERROR,
   UNABLE_TO_UPDATE_ERROR,
-  EMPTY_TITLE_ERROR, // ✅ добавили
+  EMPTY_TITLE_ERROR,
 } from './constants/errordata';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [status, setStatus] = useState(Status.All); // ✅ FIX
   const [error, setError] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [processingTodos, setProcessingTodos] = useState<number[]>([]);
@@ -30,7 +32,7 @@ export const App: React.FC = () => {
     setTimeout(() => setError(null), 3000);
   };
 
-  // ================= LOAD =================
+  // LOAD
   useEffect(() => {
     setIsLoading(true);
 
@@ -40,14 +42,14 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // ================= ADD =================
+  // ADD
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
     const title = newTitle.trim();
 
     if (!title) {
-      showError(EMPTY_TITLE_ERROR); // ✅ ИСПРАВЛЕНО
+      showError(EMPTY_TITLE_ERROR);
       return;
     }
 
@@ -69,7 +71,7 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   };
 
-  // ================= DELETE =================
+  // DELETE
   const handleDeleteTodo = (id: number) => {
     setProcessingTodos(prev => [...prev, id]);
 
@@ -83,7 +85,7 @@ export const App: React.FC = () => {
       });
   };
 
-  // ================= TOGGLE ONE =================
+  // TOGGLE
   const handleToggleTodo = (todo: Todo) => {
     setProcessingTodos(prev => [...prev, todo.id]);
 
@@ -99,26 +101,34 @@ export const App: React.FC = () => {
       });
   };
 
-  // ================= TOGGLE ALL =================
+  // TOGGLE ALL
   const handleToggleAll = () => {
     const allCompleted = todos.every(t => t.completed);
     const newStatus = !allCompleted;
 
-    const todosToUpdate = todos.filter(t => t.completed !== newStatus);
-
-    todosToUpdate.forEach(todo => handleToggleTodo(todo));
+    todos
+      .filter(t => t.completed !== newStatus)
+      .forEach(todo => handleToggleTodo(todo));
   };
 
-  // ================= FILTERS =================
+  // CLEAR COMPLETED
+  const handleClearCompleted = () => {
+    todos
+      .filter(t => t.completed)
+      .forEach(todo => handleDeleteTodo(todo.id));
+  };
+
+  // FILTERED TODOS ✅ FIX
+  const filteredTodos = todos.filter(todo => {
+    if (status === Status.All) return true;
+    if (status === Status.Active) return !todo.completed;
+    if (status === Status.Completed) return todo.completed;
+
+    return true;
+  });
+
   const activeTodos = todos.filter(t => !t.completed).length;
 
-  const handleClearCompleted = () => {
-    const completed = todos.filter(t => t.completed);
-
-    completed.forEach(todo => handleDeleteTodo(todo.id));
-  };
-
-  // ================= RENDER =================
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -133,7 +143,7 @@ export const App: React.FC = () => {
         />
 
         <TodoList
-          todos={todos}
+          todos={filteredTodos} // ✅ FIX
           processingTodos={processingTodos}
           onDelete={handleDeleteTodo}
           onToggle={handleToggleTodo}
@@ -144,13 +154,14 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <Footer
             activeTodos={activeTodos}
+            currentStatus={status}
+            setStatus={setStatus}
             hasCompleted={todos.some(t => t.completed)}
             onClearCompleted={handleClearCompleted}
           />
         )}
       </div>
 
-      {/* ✅ ИСПРАВЛЕНО */}
       <UserWarning
         error={error}
         onClose={() => setError(null)}

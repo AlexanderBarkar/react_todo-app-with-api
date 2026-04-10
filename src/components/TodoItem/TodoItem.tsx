@@ -40,19 +40,19 @@ export const TodoItem: React.FC<Props> = ({
 
     if (trimmed === todo.title) {
       setIsEditing(false);
+
       return;
     }
 
     if (!trimmed) {
       onDelete?.();
+
       return;
     }
 
     updateTodo(todo.id, { title: trimmed })
       .then(updated => {
-        setTodos?.(prev =>
-          prev.map(t => (t.id === todo.id ? updated : t)),
-        );
+        setTodos?.(prev => prev.map(t => (t.id === todo.id ? updated : t)));
       })
       .catch(() => {
         showError?.(UNABLE_TO_UPDATE_ERROR);
