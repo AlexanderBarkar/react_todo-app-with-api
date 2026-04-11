@@ -47,13 +47,11 @@ export const TodoItem: React.FC<Props> = ({
 
     if (trimmed === todo.title) {
       setIsEditing(false);
-
       return;
     }
 
     if (!trimmed) {
       onDelete?.();
-
       return;
     }
 
@@ -62,9 +60,7 @@ export const TodoItem: React.FC<Props> = ({
     updateTodo(todo.id, { title: trimmed })
       .then(updated => {
         setTodos?.(prev =>
-          prev.map(t => {
-            return t.id === todo.id ? updated : t;
-          }),
+          prev.map(t => (t.id === todo.id ? updated : t)),
         );
 
         setIsEditing(false);
@@ -99,6 +95,7 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           data-cy="TodoStatus"
+          className="todo__status"
           checked={todo.completed}
           onChange={onToggle}
         />
