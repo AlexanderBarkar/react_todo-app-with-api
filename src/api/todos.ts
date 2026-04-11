@@ -1,4 +1,4 @@
-import { USER_ID } from '../constants/userdata';
+import { USER_ID } from '../api/config';
 import { Todo } from '../types/Todo';
 import { Update } from '../types/Update';
 import { client } from '../utils/fetchClient';

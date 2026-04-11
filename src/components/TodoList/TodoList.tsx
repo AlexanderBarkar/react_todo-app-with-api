@@ -11,7 +11,7 @@ type Props = {
   onToggle: (todo: Todo) => void;
 
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setProcessingTodos: React.Dispatch<React.SetStateAction<number[]>>; // 🔥 ДОБАВИТЬ
+  setProcessingTodos: React.Dispatch<React.SetStateAction<number[]>>;
   showError: (message: string) => void;
 };
 
@@ -34,7 +34,7 @@ export const TodoList: React.FC<Props> = ({
           onDelete={() => onDelete(todo.id)}
           onToggle={() => onToggle(todo)}
           processingTodos={processingTodos}
-          setProcessingTodos={setProcessingTodos} // 🔥 ВАЖНО
+          setProcessingTodos={setProcessingTodos}
           setTodos={setTodos}
           showError={showError}
         />

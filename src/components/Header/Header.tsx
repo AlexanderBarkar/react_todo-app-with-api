@@ -8,7 +8,7 @@ type Props = {
   onToggleAll: () => void;
   allCompleted: boolean;
   isLoading: boolean;
-  hasTodos: boolean; // 🔥 FIX
+  hasTodos: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -28,7 +28,7 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* 🔥 ToggleAll ONLY if todos exist AND not loading */}
+      {/* ToggleAll ONLY if todos exist AND not loading */}
       {hasTodos && !isLoading && (
         <button
           type="button"

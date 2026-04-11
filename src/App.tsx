@@ -43,7 +43,6 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // ADD TODO
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -78,7 +77,6 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   };
 
-  // DELETE TODO
   const handleDeleteTodo = (id: number) => {
     setProcessingTodos(prev => [...prev, id]);
 
@@ -92,7 +90,6 @@ export const App: React.FC = () => {
       });
   };
 
-  // TOGGLE TODO
   const handleToggleTodo = (todo: Todo) => {
     setProcessingTodos(prev => [...prev, todo.id]);
 
@@ -106,7 +103,6 @@ export const App: React.FC = () => {
       });
   };
 
-  // TOGGLE ALL
   const handleToggleAll = () => {
     const allCompleted = todos.every(t => t.completed);
     const targetTodos = todos.filter(t => t.completed !== !allCompleted);
@@ -114,12 +110,10 @@ export const App: React.FC = () => {
     targetTodos.forEach(todo => handleToggleTodo(todo));
   };
 
-  // CLEAR COMPLETED
   const handleClearCompleted = () => {
     todos.filter(t => t.completed).forEach(todo => handleDeleteTodo(todo.id));
   };
 
-  // FILTER
   const filteredTodos = todos.filter(todo => {
     if (status === Status.All) {
       return true;
@@ -161,7 +155,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
           onToggle={handleToggleTodo}
           setTodos={setTodos}
-          setProcessingTodos={setProcessingTodos} // 🔥 КРИТИЧНО
+          setProcessingTodos={setProcessingTodos}
           showError={showError}
         />
 
